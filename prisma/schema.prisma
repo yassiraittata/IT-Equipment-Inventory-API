@@ -19,3 +19,8 @@ model User {
   password String
   role     String
 }
+
+model Category {
+  id   String @id @default(uuid()) @db.Uuid
+  name String
+}
