@@ -51,21 +51,43 @@ export const createCatrgory: RequestHandler<
 > = async (req, res, next) => {
   const { name } = req.body;
 
-  const category = prisma.category.create({ data: { name } });
+  const category = await prisma.category.create({ data: { name } });
 
   res.status(201).json(ok(category));
 };
-export const createCatrgoryMany: RequestHandler<
+
+// export const createCatrgoryMany: RequestHandler<
+//   unknown,
+//   unknown,
+//   categoryDto[]
+// > = async (req, res, next) => {
+//   const body = req.body;
+
+//   const data = await prisma.category.createMany({ data: body });
+
+//   res.status(201).json(ok(data));
+// };
+
+export const updateCatrgory: RequestHandler<
+  { id: string },
   unknown,
-  unknown,
-  categoryDto[]
+  categoryDto
 > = async (req, res, next) => {
-  const body = req.body;
+  const { id } = req.params;
+  const { name } = req.body;
 
-  const data = prisma.category.createMany({ data: body });
+  const cat = await prisma.category.findUnique({ where: { id } });
 
-  res.status(201).json(ok(data));
+  if (!cat) {
+    return next(new AppError("category was not found!", 404));
+  }
+
+  const category = await prisma.category.update({
+    where: { id },
+    data: { name },
+  });
+
+  res.status(201).json(category);
 };
 
-export const updateCatrgory: RequestHandler = (req, res, next) => {};
-export const deleteCatrgory: RequestHandler = (req, res, next) => {};
+export const deleteCatrgory: RequestHandler = async (req, res, next) => {};

@@ -3,7 +3,7 @@ import {
   createCatrgory,
   getCategory,
   listCategories,
-  createCatrgoryMany,
+  //   createCatrgoryMany,
   deleteCatrgory,
   updateCatrgory,
 } from "../controllers/categories.controller.js";
@@ -18,11 +18,11 @@ export default (router: Router) => {
     validateRequest(categorySchema),
     createCatrgory,
   );
-  router.post(
-    "/categories/add/many",
+  //   router.post("/categories/add/many", createCatrgoryMany);
+  router.put(
+    "/categories/:id",
     validateRequest(categorySchema),
-    createCatrgoryMany,
+    updateCatrgory,
   );
-  router.put("/categories/:id", updateCatrgory);
   router.delete("/categories/:id", deleteCatrgory);
 };
