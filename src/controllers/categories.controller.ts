@@ -87,7 +87,25 @@ export const updateCatrgory: RequestHandler<
     data: { name },
   });
 
-  res.status(201).json(category);
+  res.status(201).json(ok(category));
 };
 
-export const deleteCatrgory: RequestHandler = async (req, res, next) => {};
+export const deleteCatrgory: RequestHandler<{ id: string }> = async (
+  req,
+  res,
+  next,
+) => {
+  const { id } = req.params;
+
+  const cat = await prisma.category.findUnique({ where: { id } });
+
+  if (!cat) {
+    return next(new AppError("category was not found!", 404));
+  }
+
+  await prisma.category.delete({
+    where: { id },
+  });
+
+  res.status(201).json(ok({ message: "deleted succesfully" }));
+};
