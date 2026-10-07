@@ -55,6 +55,17 @@ export const createCatrgory: RequestHandler<
 
   res.status(201).json(ok(category));
 };
+export const createCatrgoryMany: RequestHandler<
+  unknown,
+  unknown,
+  categoryDto[]
+> = async (req, res, next) => {
+  const body = req.body;
+
+  const data = prisma.category.createMany({ data: body });
+
+  res.status(201).json(ok(data));
+};
 
 export const updateCatrgory: RequestHandler = (req, res, next) => {};
 export const deleteCatrgory: RequestHandler = (req, res, next) => {};
