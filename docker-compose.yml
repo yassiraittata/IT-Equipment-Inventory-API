@@ -4,6 +4,6 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: moviesapp
+      POSTGRES_DB: IT-equipment-inventory
     ports:
       - "5433:5432"
