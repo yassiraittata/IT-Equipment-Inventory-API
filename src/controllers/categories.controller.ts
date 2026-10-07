@@ -44,6 +44,17 @@ export const getCategory: RequestHandler<{ id: string }> = async (
   res.status(200).json(ok(category));
 };
 
-export const createCatrgory: RequestHandler = (req, res, next) => {};
+export const createCatrgory: RequestHandler<
+  unknown,
+  unknown,
+  categoryDto
+> = async (req, res, next) => {
+  const { name } = req.body;
+
+  const category = prisma.category.create({ data: { name } });
+
+  res.status(201).json(ok(category));
+};
+
 export const updateCatrgory: RequestHandler = (req, res, next) => {};
 export const deleteCatrgory: RequestHandler = (req, res, next) => {};
