@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import { officeDto } from "../schemas/office.schema.js";
 import prisma from "../config/db.js";
-import { ok } from "../lib/appError.js";
+import { AppError, ok } from "../lib/appError.js";
 
 export const getAllOffices: RequestHandler<
   unknown,
@@ -21,11 +21,21 @@ export const getAllOffices: RequestHandler<
   res.status(200).json(ok(offices));
 };
 
-export const getSingleOffice: RequestHandler<{ id: string }> = (
+export const getSingleOffice: RequestHandler<{ id: string }> = async (
   req,
   res,
   next,
-) => {};
+) => {
+  const { id } = req.params;
+
+  const office = await prisma.office.findUnique({ where: { id } });
+
+  if (!office) {
+    return next(new AppError("Office was not found!", 404));
+  }
+
+  res.status(200).json(ok(office));
+};
 
 export const createOffice: RequestHandler<unknown, unknown, officeDto> = (
   req,
