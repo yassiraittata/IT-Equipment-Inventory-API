@@ -77,8 +77,19 @@ export const updateOffice: RequestHandler<
   }
 };
 
-export const deleteOffice: RequestHandler<{ id: string }> = (
+export const deleteOffice: RequestHandler<{ id: string }> = async (
   req,
   res,
   next,
-) => {};
+) => {
+  try {
+    const { id } = req.params;
+
+    const office = await prisma.office.delete({
+      where: { id },
+    });
+    res.status(200).json(ok({ message: "deleted successfully" }));
+  } catch (e) {
+    return next(new AppError("Office was not found!", 404));
+  }
+};
