@@ -37,11 +37,22 @@ export const getSingleOffice: RequestHandler<{ id: string }> = async (
   res.status(200).json(ok(office));
 };
 
-export const createOffice: RequestHandler<unknown, unknown, officeDto> = (
+export const createOffice: RequestHandler<unknown, unknown, officeDto> = async (
   req,
   res,
   next,
-) => {};
+) => {
+  const { floor, name, building } = req.body;
+
+  const office = await prisma.office.create({
+    data: {
+      name,
+      building,
+      floor,
+    },
+  });
+  res.status(200).json(ok(office));
+};
 
 export const updateOffice: RequestHandler<{ id: string }> = (
   req,
