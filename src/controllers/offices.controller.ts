@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import { officeDto } from "../schemas/office.schema.js";
 
 export const getAllOffices: RequestHandler<
   unknown,
@@ -13,7 +14,7 @@ export const getSingleOffice: RequestHandler<{ id: string }> = (
   next,
 ) => {};
 
-export const createOffice: RequestHandler<{ id: string }> = (
+export const createOffice: RequestHandler<unknown, unknown, officeDto> = (
   req,
   res,
   next,
