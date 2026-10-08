@@ -27,8 +27,9 @@ model Category {
   id   String @id @default(uuid()) @db.Uuid
   name String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  equipment Equipment[]
 }
 
 model Office {
@@ -37,6 +38,31 @@ model Office {
   building String
   floor    Int
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  equipment Equipment[]
+}
+
+model Equipment {
+  id            String   @id @default(uuid()) @db.Uuid
+  serial_number String   @unique
+  brand         String
+  model         String
+  category_id   String   @db.Uuid
+  office_id     String   @db.Uuid
+  status        Status
+  purchase_date DateTime
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  category Category @relation(fields: [category_id], references: [id])
+  office   Office   @relation(fields: [office_id], references: [id])
+}
+
+enum Status {
+  in_stock
+  in_use
+  in_repair
+  retired
 }
