@@ -54,11 +54,28 @@ export const createOffice: RequestHandler<unknown, unknown, officeDto> = async (
   res.status(200).json(ok(office));
 };
 
-export const updateOffice: RequestHandler<{ id: string }> = (
-  req,
-  res,
-  next,
-) => {};
+export const updateOffice: RequestHandler<
+  { id: string },
+  unknown,
+  officeDto
+> = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { floor, name, building } = req.body;
+
+    const office = await prisma.office.update({
+      where: { id },
+      data: {
+        name,
+        building,
+        floor,
+      },
+    });
+    res.status(200).json(ok(office));
+  } catch (e) {
+    return next(new AppError("Office was not found!", 404));
+  }
+};
 
 export const deleteOffice: RequestHandler<{ id: string }> = (
   req,
