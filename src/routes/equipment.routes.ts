@@ -11,6 +11,6 @@ export default (router: Router) => {
   router.get("/equipments/:id", getSingleEquipment);
   router.post("/equipments/add", createEquipment);
   router.post("/equipments/add-many", createEquipments);
-  router.put("/equipments/:id");
-  router.delete("/equipments/:id");
+  // router.put("/equipments/:id");
+  // router.delete("/equipments/:id");
 };

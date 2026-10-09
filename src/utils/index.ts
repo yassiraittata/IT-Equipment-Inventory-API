@@ -1,6 +1,6 @@
 import { NextFunction } from "express";
 import crypto from "node:crypto";
-import { AppError } from "./lib/appError.js";
+import { AppError } from "../lib/appError.js";
 
 export function generateSerialNumber(): string {
   return `EQP-${crypto.randomBytes(6).toString("hex").toUpperCase()}`;

@@ -9,7 +9,7 @@ export const getAllOffices: RequestHandler<
   unknown,
   { page: string }
 > = async (req, res, next) => {
-  const { page } = req.query;
+  const page = req.query.page || 1;
   const take = 10;
   const skip = (+page - 1) * take;
 

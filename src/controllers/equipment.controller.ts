@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import prisma from "../config/db.js";
 import { AppError, ok } from "../lib/appError.js";
-import { generateSerialNumber, parseDateQuery } from "../index.js";
+import { generateSerialNumber, parseDateQuery } from "../utils/index.js";
 import { equipmentDto } from "../schemas/equipment.schema.js";
 
 type searchQuery = {
@@ -102,7 +102,6 @@ export const createEquipment: RequestHandler<
   res.status(200).json(ok(office));
 };
 
-
 // TODO: insert sample data from GPT
 // TODO: test the previous routes
 export const createEquipments: RequestHandler<
@@ -110,24 +109,22 @@ export const createEquipments: RequestHandler<
   unknown,
   equipmentDto[]
 > = async (req, res, next) => {
-  //   const { brand, category_id, model, office_id, purchase_date, status } =
-  //     req.body;
+  try {
+   
 
-  //   const date = new Date(purchase_date);
 
-  //   if (Number.isNaN(date.getTime())) {
-  //     return next(new AppError("Invalid purchase date", 400));
-  //   }
+    const data = req.body.map((item) => ({
+      ...item,
+      serial_number: generateSerialNumber(),
+    }));
 
-  const data = req.body.map((item) => ({
-    ...item,
-    serial_number: generateSerialNumber(),
-  }));
-
-  const office = await prisma.equipment.createMany({
-    data: data,
-  });
-  res.status(200).json(ok(office));
+    const office = await prisma.equipment.createMany({
+      data: data,
+    });
+    res.status(200).json(ok(office));
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 // export const updateOffice: RequestHandler<
