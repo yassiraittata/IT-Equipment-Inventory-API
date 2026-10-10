@@ -21,29 +21,38 @@ export const getAllEquipments: RequestHandler<
 > = async (req, res, next) => {
   const { page, brand, category, office, purchase_date, status } = req.query;
   const take = 10;
-  const skip = (+page - 1) * take;
+  const skip = (+(page || 1) - 1) * take;
 
   let filterObj: {
-    status?: string;
-    category?: string;
-    office?: string;
+    status?: "in_stock" | "in_use" | "in_repair" | "retired";
+    category_id?: string;
+    office_id?: string;
     brand?: string;
     purchase_date?: Date;
   } = {};
 
-  if (brand) {
-    filterObj.status = status;
+  if (status) {
+    const validStatuses = [
+      "in_stock",
+      "in_use",
+      "in_repair",
+      "retired",
+    ] as const;
+
+    if (validStatuses.includes(status as (typeof validStatuses)[number])) {
+      filterObj.status = status as (typeof validStatuses)[number];
+    }
   }
-  if (brand) {
-    filterObj.category = category;
+  if (category) {
+    filterObj.category_id = category;
   }
-  if (brand) {
-    filterObj.office = office;
+  if (office) {
+    filterObj.office_id = office;
   }
   if (brand) {
     filterObj.brand = brand;
   }
-  if (brand) {
+  if (purchase_date) {
     let date = parseDateQuery(purchase_date, next);
     if (date) {
       filterObj.purchase_date = date;
@@ -53,6 +62,7 @@ export const getAllEquipments: RequestHandler<
   const equipments = await prisma.equipment.findMany({
     take,
     skip,
+    where: { ...filterObj },
   });
 
   res.status(200).json(ok(equipments));
@@ -72,7 +82,7 @@ export const getSingleEquipment: RequestHandler<{ id: string }> = async (
   }
 
   res.status(200).json(ok(office));
-};  
+};
 
 export const createEquipment: RequestHandler<
   unknown,
@@ -109,9 +119,6 @@ export const createEquipments: RequestHandler<
   equipmentDto[]
 > = async (req, res, next) => {
   try {
-   
-
-
     const data = req.body.map((item) => ({
       ...item,
       serial_number: generateSerialNumber(),
