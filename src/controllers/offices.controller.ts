@@ -8,7 +8,7 @@ export const getAllOffices: RequestHandler<
   unknown,
   unknown,
   { page: string }
-> = async (req, res, next) => {
+> = async (req, res, _next) => {
   const page = req.query.page || 1;
   const take = 10;
   const skip = (+page - 1) * take;
@@ -40,7 +40,7 @@ export const getSingleOffice: RequestHandler<{ id: string }> = async (
 export const createOffice: RequestHandler<unknown, unknown, officeDto> = async (
   req,
   res,
-  next,
+  _next,
 ) => {
   const { floor, name, building } = req.body;
 
@@ -85,7 +85,7 @@ export const deleteOffice: RequestHandler<{ id: string }> = async (
   try {
     const { id } = req.params;
 
-    const office = await prisma.office.delete({
+    await prisma.office.delete({
       where: { id },
     });
     res.status(200).json(ok({ message: "deleted successfully" }));

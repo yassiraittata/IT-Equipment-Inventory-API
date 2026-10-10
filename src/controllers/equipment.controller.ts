@@ -72,7 +72,7 @@ export const getSingleEquipment: RequestHandler<{ id: string }> = async (
   }
 
   res.status(200).json(ok(office));
-};
+};  
 
 export const createEquipment: RequestHandler<
   unknown,
@@ -102,7 +102,6 @@ export const createEquipment: RequestHandler<
   res.status(200).json(ok(office));
 };
 
-// TODO: insert sample data from GPT
 // TODO: test the previous routes
 export const createEquipments: RequestHandler<
   unknown,
