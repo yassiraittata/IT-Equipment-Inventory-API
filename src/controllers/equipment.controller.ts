@@ -3,6 +3,7 @@ import prisma from "../config/db.js";
 import { AppError, ok } from "../lib/appError.js";
 import { generateSerialNumber, parseDateQuery } from "../utils/index.js";
 import { equipmentDto } from "../schemas/equipment.schema.js";
+import { parseAnyDate } from "../utils/date.js";
 
 type searchQuery = {
   status: string;
@@ -88,14 +89,14 @@ export const createEquipment: RequestHandler<
   unknown,
   unknown,
   equipmentDto
-> = async (req, res, next) => {
+> = async (req, res, _next) => {
   const { brand, category_id, model, office_id, purchase_date, status } =
     req.body;
 
-  const date = new Date(purchase_date);
+  const purchaseDate = parseAnyDate(purchase_date);
 
-  if (Number.isNaN(date.getTime())) {
-    return next(new AppError("Invalid purchase date", 400));
+  if (!purchaseDate) {
+    throw new AppError("Invalid purchase date", 400);
   }
 
   const equipment = await prisma.equipment.create({
@@ -104,7 +105,7 @@ export const createEquipment: RequestHandler<
       category_id,
       model,
       office_id,
-      purchase_date,
+      purchase_date: purchaseDate,
       status,
       serial_number: generateSerialNumber(),
     },
@@ -112,49 +113,71 @@ export const createEquipment: RequestHandler<
   res.status(200).json(ok(equipment));
 };
 
-// TODO: test the previous routes
 export const createEquipments: RequestHandler<
   unknown,
   unknown,
   equipmentDto[]
 > = async (req, res, next) => {
   try {
-    const data = req.body.map((item) => ({
-      ...item,
-      serial_number: generateSerialNumber(),
-    }));
-
-    const office = await prisma.equipment.createMany({
-      data: data,
+    const data = req.body.map((item) => {
+      const purchaseDate = parseAnyDate(item.purchase_date);
+      if (!purchaseDate) {
+        throw new AppError(`Please enter a valid date for purchase date`, 400);
+      }
+      return {
+        ...item,
+        purchase_date: purchaseDate,
+        serial_number: generateSerialNumber(),
+      };
     });
-    res.status(200).json(ok(office));
+
+    const equipment = await prisma.equipment.createMany({
+      data,
+    });
+    res.status(200).json(ok(equipment));
   } catch (e) {
-    console.log(e);
+    if (e instanceof AppError) {
+      return next(e);
+    }
+    return next(new AppError("Equipment was not found!!!!", 404));
   }
 };
 
-// export const updateOffice: RequestHandler<
-//   { id: string },
-//   unknown,
-//   officeDto
-// > = async (req, res, next) => {
-//   try {
-//     const { id } = req.params;
-//     const { floor, name, building } = req.body;
+export const updateEquipment: RequestHandler<
+  { id: string },
+  unknown,
+  equipmentDto
+> = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { brand, category_id, model, office_id, purchase_date, status } =
+      req.body;
 
-//     const office = await prisma.office.update({
-//       where: { id },
-//       data: {
-//         name,
-//         building,
-//         floor,
-//       },
-//     });
-//     res.status(200).json(ok(office));
-//   } catch (e) {
-//     return next(new AppError("Office was not found!", 404));
-//   }
-// };
+    const purchaseDate = parseAnyDate(purchase_date);
+
+    if (!purchaseDate) {
+      throw new AppError("Invalid purchase date", 400);
+    }
+
+    const equipment = await prisma.equipment.update({
+      where: { id },
+      data: {
+        brand,
+        category_id,
+        model,
+        office_id,
+        purchase_date,
+        status,
+      },
+    });
+    res.status(200).json(ok(equipment));
+  } catch (e) {
+    if (e instanceof AppError) {
+      return next(e);
+    }
+    return next(new AppError("Equipment was not found!", 404));
+  }
+};
 
 // export const deleteOffice: RequestHandler<{ id: string }> = async (
 //   req,
