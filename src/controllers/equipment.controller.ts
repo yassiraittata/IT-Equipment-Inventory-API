@@ -75,13 +75,13 @@ export const getSingleEquipment: RequestHandler<{ id: string }> = async (
 ) => {
   const { id } = req.params;
 
-  const office = await prisma.office.findUnique({ where: { id } });
+  const equipment = await prisma.equipment.findUnique({ where: { id } });
 
-  if (!office) {
-    return next(new AppError("Office was not found!", 404));
+  if (!equipment) {
+    return next(new AppError("Equipment was not found!", 404));
   }
 
-  res.status(200).json(ok(office));
+  res.status(200).json(ok(equipment));
 };
 
 export const createEquipment: RequestHandler<
@@ -98,7 +98,7 @@ export const createEquipment: RequestHandler<
     return next(new AppError("Invalid purchase date", 400));
   }
 
-  const office = await prisma.equipment.create({
+  const equipment = await prisma.equipment.create({
     data: {
       brand,
       category_id,
@@ -109,7 +109,7 @@ export const createEquipment: RequestHandler<
       serial_number: generateSerialNumber(),
     },
   });
-  res.status(200).json(ok(office));
+  res.status(200).json(ok(equipment));
 };
 
 // TODO: test the previous routes

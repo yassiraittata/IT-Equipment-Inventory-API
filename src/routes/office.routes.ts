@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { z } from "zod";
 import {
   createOffice,
   deleteOffice,
@@ -10,22 +9,12 @@ import {
 import { validateRequest } from "../middlewares/validateRequest.js";
 import { officeSchema } from "../schemas/office.schema.js";
 import { validateParams } from "../middlewares/paramsValidator.js";
+import { paramsSchema } from "../schemas/uuid.schema.js";
 
-const officeParamsSchema = z.object({
-  id: z.uuid("Make sure to provide a valid uuid"),
-});
 export default (router: Router) => {
   router.get("/offices", getAllOffices);
-  router.get(
-    "/offices/:id",
-    validateParams(officeParamsSchema),
-    getSingleOffice,
-  );
+  router.get("/offices/:id", validateParams(paramsSchema), getSingleOffice);
   router.post("/offices/add", validateRequest(officeSchema), createOffice);
-  router.put("/offices/:id", validateParams(officeParamsSchema), updateOffice);
-  router.delete(
-    "/offices/:id",
-    validateParams(officeParamsSchema),
-    deleteOffice,
-  );
+  router.put("/offices/:id", validateParams(paramsSchema), updateOffice);
+  router.delete("/offices/:id", validateParams(paramsSchema), deleteOffice);
 };
