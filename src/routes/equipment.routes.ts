@@ -6,7 +6,8 @@ import {
   getAllEquipments,
   getSingleEquipment,
   updateEquipment,
-  getEquipementByoffice,
+  getEquipementByOffice,
+  getEquipementByCategory,
 } from "../controllers/equipment.controller.js";
 import { validateParams } from "../middlewares/paramsValidator.js";
 import { paramsSchema } from "../schemas/uuid.schema.js";
@@ -23,7 +24,12 @@ export default (router: Router) => {
   router.get(
     "/equipments/office/:id",
     validateParams(paramsSchema),
-    getEquipementByoffice,
+    getEquipementByOffice,
+  );
+  router.get(
+    "/equipments/category/:id",
+    validateParams(paramsSchema),
+    getEquipementByCategory,
   );
   router.post(
     "/equipments/add",

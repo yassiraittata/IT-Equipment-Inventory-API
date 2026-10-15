@@ -196,7 +196,7 @@ export const deleteEquipment: RequestHandler<{ id: string }> = async (
   }
 };
 
-export const getEquipementByoffice: RequestHandler<{ id: string }> = async (
+export const getEquipementByOffice: RequestHandler<{ id: string }> = async (
   req,
   res,
   next,
@@ -206,6 +206,21 @@ export const getEquipementByoffice: RequestHandler<{ id: string }> = async (
   const equipments = await prisma.equipment.findMany({
     where: {
       office_id: id,
+    },
+  });
+
+  res.status(200).json(ok(equipments));
+};
+export const getEquipementByCategory: RequestHandler<{ id: string }> = async (
+  req,
+  res,
+  next,
+) => {
+  const { id } = req.params;
+
+  const equipments = await prisma.equipment.findMany({
+    where: {
+      category_id: id,
     },
   });
 
