@@ -195,3 +195,19 @@ export const deleteEquipment: RequestHandler<{ id: string }> = async (
     return next(new AppError("Equipment was not found!", 404));
   }
 };
+
+export const getEquipementByoffice: RequestHandler<{ id: string }> = async (
+  req,
+  res,
+  next,
+) => {
+  const { id } = req.params;
+
+  const equipments = await prisma.equipment.findMany({
+    where: {
+      office_id: id,
+    },
+  });
+
+  res.status(200).json(ok(equipments));
+};

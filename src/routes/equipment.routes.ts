@@ -6,6 +6,7 @@ import {
   getAllEquipments,
   getSingleEquipment,
   updateEquipment,
+  getEquipementByoffice,
 } from "../controllers/equipment.controller.js";
 import { validateParams } from "../middlewares/paramsValidator.js";
 import { paramsSchema } from "../schemas/uuid.schema.js";
@@ -18,6 +19,11 @@ export default (router: Router) => {
     "/equipments/:id",
     validateParams(paramsSchema),
     getSingleEquipment,
+  );
+  router.get(
+    "/equipments/office/:id",
+    validateParams(paramsSchema),
+    getEquipementByoffice,
   );
   router.post(
     "/equipments/add",
