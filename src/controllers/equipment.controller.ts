@@ -179,19 +179,19 @@ export const updateEquipment: RequestHandler<
   }
 };
 
-// export const deleteOffice: RequestHandler<{ id: string }> = async (
-//   req,
-//   res,
-//   next,
-// ) => {
-//   try {
-//     const { id } = req.params;
+export const deleteEquipment: RequestHandler<{ id: string }> = async (
+  req,
+  res,
+  next,
+) => {
+  try {
+    const { id } = req.params;
 
-//     const office = await prisma.office.delete({
-//       where: { id },
-//     });
-//     res.status(200).json(ok({ message: "deleted successfully" }));
-//   } catch (e) {
-//     return next(new AppError("Office was not found!", 404));
-//   }
-// };
+    const equipment = await prisma.equipment.delete({
+      where: { id },
+    });
+    res.status(200).json(ok({ message: "deleted successfully" }));
+  } catch (e) {
+    return next(new AppError("Equipment was not found!", 404));
+  }
+};

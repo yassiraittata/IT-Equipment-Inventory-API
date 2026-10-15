@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createEquipment,
   createEquipments,
+  deleteEquipment,
   getAllEquipments,
   getSingleEquipment,
   updateEquipment,
@@ -25,5 +26,9 @@ export default (router: Router) => {
   );
   router.post("/equipments/add-many", createEquipments);
   router.put("/equipments/:id", validateParams(paramsSchema), updateEquipment);
-  // router.delete("/equipments/:id");
+  router.delete(
+    "/equipments/:id",
+    validateParams(paramsSchema),
+    deleteEquipment,
+  );
 };
