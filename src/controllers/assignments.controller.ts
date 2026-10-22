@@ -19,6 +19,16 @@ export const createAssignments: RequestHandler<
     throw new AppError("Equipement was not found!", 404);
   }
 
+  if (equipement.status == "in_use") {
+    throw new AppError("Equipement was already assigned!", 404);
+  }
+  if (equipement.status == "in_repair") {
+    throw new AppError("Equipement is in repair!", 404);
+  }
+  if (equipement.status == "retired") {
+    throw new AppError("Equipement is retired!", 404);
+  }
+
   const user = await prisma.user.findUnique({
     where: { id: user_id },
   });
@@ -31,6 +41,15 @@ export const createAssignments: RequestHandler<
     data: {
       assigned_to: user_id,
       equipment_id: id,
+    },
+  });
+
+  await prisma.equipment.update({
+    data: {
+      status: "in_use",
+    },
+    where: {
+      id,
     },
   });
 
