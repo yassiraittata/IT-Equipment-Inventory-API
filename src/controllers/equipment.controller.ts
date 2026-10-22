@@ -226,3 +226,42 @@ export const getEquipementByCategory: RequestHandler<{ id: string }> = async (
 
   res.status(200).json(ok(equipments));
 };
+
+export const getHistory: RequestHandler<{ id: string }> = async (
+  req,
+  res,
+  _next,
+) => {
+  const { id } = req.params;
+
+  const equipment = await prisma.equipment.findUnique({ where: { id } });
+
+  if (!equipment) {
+    throw new AppError("Equipment was not found", 404);
+  }
+
+  const assignments = await prisma.assignments.findMany({
+    where: { equipment_id: equipment.id },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
+      },
+    },
+  });
+
+  const history = assignments.map((item) => {
+    return {
+      equipment,
+      assigned_at: item.assigned_at,
+      returned_at: item.returned_at,
+      user: item.user,
+    };
+  });
+
+  res.status(200).json(ok(history));
+};

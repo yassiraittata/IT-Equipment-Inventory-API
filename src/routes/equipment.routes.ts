@@ -8,6 +8,7 @@ import {
   updateEquipment,
   getEquipementByOffice,
   getEquipementByCategory,
+  getHistory,
 } from "../controllers/equipment.controller.js";
 import { validateParams } from "../middlewares/paramsValidator.js";
 import { paramsSchema } from "../schemas/uuid.schema.js";
@@ -42,5 +43,11 @@ export default (router: Router) => {
     "/equipments/:id",
     validateParams(paramsSchema),
     deleteEquipment,
+  );
+  // the hiistory of an item
+  router.get(
+    "/equipment/:id/assignments",
+    validateParams(paramsSchema),
+    getHistory,
   );
 };
