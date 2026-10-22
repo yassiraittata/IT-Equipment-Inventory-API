@@ -73,8 +73,8 @@ model Assignments {
   id           String   @id @default(uuid()) @db.Uuid
   equipment_id String   @db.Uuid
   assigned_to  String   @db.Uuid
-  assigned_at  DateTime
-  returned_at  DateTime
+  assigned_at  DateTime @default(now())
+  returned_at  DateTime?
 
   user      User      @relation(fields: [assigned_to], references: [id], onDelete: Cascade)
   equipment Equipment @relation(fields: [equipment_id], references: [id], onDelete: Cascade)

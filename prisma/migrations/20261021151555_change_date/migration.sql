@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Assignments" ALTER COLUMN "assigned_at" SET DEFAULT CURRENT_TIMESTAMP;
