@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import prisma from "../config/db.js";
 import { AppError, ok } from "../lib/appError.js";
-import { generateSerialNumber, parseDateQuery } from "../utils/index.js";
+import { generateSerialNumber } from "../utils/index.js";
 import { equipmentDto } from "../schemas/equipment.schema.js";
 import { parseAnyDate } from "../utils/date.js";
 
@@ -19,7 +19,7 @@ export const getAllEquipments: RequestHandler<
   unknown,
   unknown,
   searchQuery
-> = async (req, res, next) => {
+> = async (req, res) => {
   const { page, brand, category, office, purchase_date, status } = req.query;
   const take = 10;
   const skip = (+(page || 1) - 1) * take;
@@ -54,7 +54,7 @@ export const getAllEquipments: RequestHandler<
     filterObj.brand = brand;
   }
   if (purchase_date) {
-    let date = parseDateQuery(purchase_date, next);
+    let date = parseAnyDate(purchase_date);
     if (date) {
       filterObj.purchase_date = date;
     }
@@ -72,14 +72,13 @@ export const getAllEquipments: RequestHandler<
 export const getSingleEquipment: RequestHandler<{ id: string }> = async (
   req,
   res,
-  next,
 ) => {
   const { id } = req.params;
 
   const equipment = await prisma.equipment.findUnique({ where: { id } });
 
   if (!equipment) {
-    return next(new AppError("Equipment was not found!", 404));
+    throw new AppError("Equipment was not found!", 404);
   }
 
   res.status(200).json(ok(equipment));
@@ -89,7 +88,7 @@ export const createEquipment: RequestHandler<
   unknown,
   unknown,
   equipmentDto
-> = async (req, res, _next) => {
+> = async (req, res) => {
   const { brand, category_id, model, office_id, purchase_date, status } =
     req.body;
 
@@ -139,7 +138,7 @@ export const createEquipments: RequestHandler<
     if (e instanceof AppError) {
       return next(e);
     }
-    return next(new AppError("Equipment was not found!!!!", 404));
+    throw new AppError("Equipment was not found!!!!", 404);
   }
 };
 
@@ -175,31 +174,29 @@ export const updateEquipment: RequestHandler<
     if (e instanceof AppError) {
       return next(e);
     }
-    return next(new AppError("Equipment was not found!", 404));
+    throw new AppError("Equipment was not found!", 404);
   }
 };
 
 export const deleteEquipment: RequestHandler<{ id: string }> = async (
   req,
   res,
-  next,
 ) => {
   try {
     const { id } = req.params;
 
-    const equipment = await prisma.equipment.delete({
+    await prisma.equipment.delete({
       where: { id },
     });
     res.status(200).json(ok({ message: "deleted successfully" }));
   } catch (e) {
-    return next(new AppError("Equipment was not found!", 404));
+    throw new AppError("Equipment was not found!", 404);
   }
 };
 
 export const getEquipementByOffice: RequestHandler<{ id: string }> = async (
   req,
   res,
-  next,
 ) => {
   const { id } = req.params;
 
@@ -214,7 +211,6 @@ export const getEquipementByOffice: RequestHandler<{ id: string }> = async (
 export const getEquipementByCategory: RequestHandler<{ id: string }> = async (
   req,
   res,
-  next,
 ) => {
   const { id } = req.params;
 

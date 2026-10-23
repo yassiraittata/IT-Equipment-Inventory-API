@@ -8,7 +8,7 @@ export const getAllOffices: RequestHandler<
   unknown,
   unknown,
   { page: string }
-> = async (req, res, _next) => {
+> = async (req, res) => {
   const page = req.query.page || 1;
   const take = 10;
   const skip = (+page - 1) * take;
@@ -24,14 +24,13 @@ export const getAllOffices: RequestHandler<
 export const getSingleOffice: RequestHandler<{ id: string }> = async (
   req,
   res,
-  next,
 ) => {
   const { id } = req.params;
 
   const office = await prisma.office.findUnique({ where: { id } });
 
   if (!office) {
-    return next(new AppError("Office was not found!", 404));
+    throw new AppError("Office was not found!", 404);
   }
 
   res.status(200).json(ok(office));
@@ -40,7 +39,6 @@ export const getSingleOffice: RequestHandler<{ id: string }> = async (
 export const createOffice: RequestHandler<unknown, unknown, officeDto> = async (
   req,
   res,
-  _next,
 ) => {
   const { floor, name, building } = req.body;
 
@@ -58,7 +56,7 @@ export const updateOffice: RequestHandler<
   { id: string },
   unknown,
   officeDto
-> = async (req, res, next) => {
+> = async (req, res) => {
   try {
     const { id } = req.params;
     const { floor, name, building } = req.body;
@@ -73,14 +71,13 @@ export const updateOffice: RequestHandler<
     });
     res.status(200).json(ok(office));
   } catch (e) {
-    return next(new AppError("Office was not found!", 404));
+    throw new AppError("Office was not found!", 404);
   }
 };
 
 export const deleteOffice: RequestHandler<{ id: string }> = async (
   req,
   res,
-  next,
 ) => {
   try {
     const { id } = req.params;
@@ -90,6 +87,6 @@ export const deleteOffice: RequestHandler<{ id: string }> = async (
     });
     res.status(200).json(ok({ message: "deleted successfully" }));
   } catch (e) {
-    return next(new AppError("Office was not found!", 404));
+    throw new AppError("Office was not found!", 404);
   }
 };

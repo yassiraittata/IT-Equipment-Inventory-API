@@ -8,7 +8,7 @@ export const validateParams = (schema: ZodObject): RequestHandler => {
 
     if (!success) {
       let messages = error.issues.map((err) => err.message).join(", ");
-      return next(new AppError(messages, 400));
+      throw new AppError(messages, 400);
     }
 
     next();

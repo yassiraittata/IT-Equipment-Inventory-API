@@ -10,7 +10,7 @@ export const listCategories: RequestHandler<
   unknown,
   unknown,
   { page: string }
-> = async (req, res, next) => {
+> = async (req, res) => {
   const { page } = req.query;
   const take = 10;
   const skip = ((+page || 1) - 1) * take;
@@ -29,7 +29,6 @@ export const listCategories: RequestHandler<
 export const getCategory: RequestHandler<{ id: string }> = async (
   req,
   res,
-  next,
 ) => {
   const { id } = req.params;
 
@@ -38,7 +37,7 @@ export const getCategory: RequestHandler<{ id: string }> = async (
   });
 
   if (!category) {
-    return next(new AppError("No category eas found", 404));
+    throw new AppError("No category eas found", 404);
   }
 
   res.status(200).json(ok(category));
@@ -48,7 +47,7 @@ export const createCatrgory: RequestHandler<
   unknown,
   unknown,
   categoryDto
-> = async (req, res, next) => {
+> = async (req, res) => {
   const { name } = req.body;
 
   const category = await prisma.category.create({ data: { name } });
@@ -60,7 +59,7 @@ export const createCatrgory: RequestHandler<
 //   unknown,
 //   unknown,
 //   categoryDto[]
-// > = async (req, res, next) => {
+// > = async (req, res) => {
 //   const body = req.body;
 
 //   const data = await prisma.category.createMany({ data: body });
@@ -72,14 +71,14 @@ export const updateCatrgory: RequestHandler<
   { id: string },
   unknown,
   categoryDto
-> = async (req, res, next) => {
+> = async (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
 
   const cat = await prisma.category.findUnique({ where: { id } });
 
   if (!cat) {
-    return next(new AppError("category was not found!", 404));
+    throw new AppError("category was not found!", 404);
   }
 
   const category = await prisma.category.update({
@@ -93,14 +92,13 @@ export const updateCatrgory: RequestHandler<
 export const deleteCatrgory: RequestHandler<{ id: string }> = async (
   req,
   res,
-  next,
 ) => {
   const { id } = req.params;
 
   const cat = await prisma.category.findUnique({ where: { id } });
 
   if (!cat) {
-    return next(new AppError("category was not found!", 404));
+    throw new AppError("category was not found!", 404);
   }
 
   await prisma.category.delete({

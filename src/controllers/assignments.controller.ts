@@ -8,7 +8,7 @@ export const createAssignments: RequestHandler<
   { id: string },
   unknown,
   assignmentDto
-> = async (req, res, _next) => {
+> = async (req, res) => {
   const { id } = req.params;
   const { user_id } = req.body;
 
@@ -62,7 +62,6 @@ export const createAssignments: RequestHandler<
 export const closeAssignments: RequestHandler<{ id: string }> = async (
   req,
   res,
-  _next,
 ) => {
   const { id } = req.params;
 

@@ -8,10 +8,11 @@ const maintenanceStatus = z.enum([
 ]);
 
 export const maintenanceSchema = z.object({
-  equipment_id: z.uuid("Please enter a valid uuid"),
-  description: z.string(),
-  status: maintenanceStatus,
+  description: z.string("Please add a description"),
+  status: maintenanceStatus.default("open"),
   cost: z.number().optional(),
-  opened_at: z.string(),
+  opened_at: z.string().optional(),
   completed_at: z.string().optional(),
 });
+
+export type maintenanceDto = z.infer<typeof maintenanceSchema>;
