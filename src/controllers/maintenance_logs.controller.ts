@@ -3,6 +3,44 @@ import { maintenanceDto } from "../schemas/maintenance.schema.js";
 import prisma from "../config/db.js";
 import { AppError, ok } from "../lib/appError.js";
 
+type searchQuery = {
+  status?: "open" | "in_progress" | "completed" | "canceled";
+  equipment_id?: string;
+  cost?: string | number;
+  page?: string;
+};
+
+export const getMaintenances: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  searchQuery
+> = async (req, res) => {
+  const { page, equipment_id, status, cost } = req.query;
+  const take = 10;
+  const skip = (+(page || 1) - 1) * take;
+
+  let filterObj: searchQuery = {};
+
+  if (equipment_id) {
+    filterObj.equipment_id = equipment_id;
+  }
+  if (status) {
+    filterObj.status = status;
+  }
+  if (equipment_id) {
+    filterObj.cost = typeof cost === "string" ? +cost : cost;
+  }
+
+  const maintenances = await prisma.maintenance_logs.findMany({
+    where: filterObj,
+    take,
+    skip,
+  });
+
+  res.status(200).json(ok(maintenances));
+};
+
 export const createMaintenance: RequestHandler<
   { id: string },
   unknown,

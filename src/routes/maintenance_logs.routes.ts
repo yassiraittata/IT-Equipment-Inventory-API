@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { createMaintenance } from "../controllers/maintenance_logs.controller.js";
+import {
+  createMaintenance,
+  getMaintenances,
+} from "../controllers/maintenance_logs.controller.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
 import { maintenanceSchema } from "../schemas/maintenance.schema.js";
 import { validateParams } from "../middlewares/paramsValidator.js";
@@ -12,4 +15,5 @@ export default (router: Router) => {
     validateRequest(maintenanceSchema),
     createMaintenance,
   );
+  router.get("maintenance_logs", getMaintenances);
 };
