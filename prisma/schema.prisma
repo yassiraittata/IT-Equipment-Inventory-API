@@ -57,9 +57,10 @@ model Equipment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  category    Category      @relation(fields: [category_id], references: [id])
-  office      Office        @relation(fields: [office_id], references: [id], onDelete: SetNull)
-  assignments Assignments[]
+  category        Category           @relation(fields: [category_id], references: [id])
+  office          Office             @relation(fields: [office_id], references: [id], onDelete: SetNull)
+  assignments     Assignments[]
+  maintenanceLogs Maintenance_logs[]
 }
 
 enum Status {
@@ -70,12 +71,34 @@ enum Status {
 }
 
 model Assignments {
-  id           String   @id @default(uuid()) @db.Uuid
-  equipment_id String   @db.Uuid
-  assigned_to  String   @db.Uuid
-  assigned_at  DateTime @default(now())
+  id           String    @id @default(uuid()) @db.Uuid
+  equipment_id String    @db.Uuid
+  assigned_to  String    @db.Uuid
+  assigned_at  DateTime  @default(now())
   returned_at  DateTime?
 
   user      User      @relation(fields: [assigned_to], references: [id], onDelete: Cascade)
   equipment Equipment @relation(fields: [equipment_id], references: [id], onDelete: Cascade)
+}
+
+enum MaintenanceStatus {
+  open
+  in_progress
+  completed
+  canceled
+}
+
+model Maintenance_logs {
+  id           String @id @default(uuid()) @db.Uuid
+  equipment_id String @db.Uuid
+
+  description  String
+  status       MaintenanceStatus @default(open)
+  cost         Decimal?          @db.Decimal(10, 2)
+  opened_at    DateTime          @default(now())
+  completed_at DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  equipment Equipment @relation(fields: [equipment_id], references: [id], onDelete: Restrict)
 }
