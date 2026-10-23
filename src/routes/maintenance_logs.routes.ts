@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createMaintenance,
   getMaintenances,
+  getSingleMaintenance,
 } from "../controllers/maintenance_logs.controller.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
 import { maintenanceSchema } from "../schemas/maintenance.schema.js";
@@ -16,4 +17,9 @@ export default (router: Router) => {
     createMaintenance,
   );
   router.get("maintenance_logs", getMaintenances);
+  router.get(
+    "maintenance_logs/:id",
+    validateParams(paramsSchema),
+    getSingleMaintenance,
+  );
 };

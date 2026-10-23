@@ -41,6 +41,23 @@ export const getMaintenances: RequestHandler<
   res.status(200).json(ok(maintenances));
 };
 
+export const getSingleMaintenance: RequestHandler<{ id: string }> = async (
+  req,
+  res,
+) => {
+  const { id } = req.params;
+
+  const maintenance = await prisma.maintenance_logs.findUnique({
+    where: { id },
+  });
+
+  if (!maintenance) {
+    throw new AppError("Maintenance was not found!", 404);
+  }
+
+  res.status(200).json(ok(maintenance));
+};
+
 export const createMaintenance: RequestHandler<
   { id: string },
   unknown,
