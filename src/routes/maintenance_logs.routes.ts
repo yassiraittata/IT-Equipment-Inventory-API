@@ -1,0 +1,15 @@
+import { Router } from "express";
+import { createMaintenance } from "../controllers/maintenance_logs.controller.js";
+import { validateRequest } from "../middlewares/validateRequest.js";
+import { maintenanceSchema } from "../schemas/maintenance.schema.js";
+import { validateParams } from "../middlewares/paramsValidator.js";
+import { paramsSchema } from "../schemas/uuid.schema.js";
+
+export default (router: Router) => {
+  router.post(
+    "/equipment/:id/maintenance",
+    validateParams(paramsSchema),
+    validateRequest(maintenanceSchema),
+    createMaintenance,
+  );
+};
