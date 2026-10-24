@@ -1,7 +1,11 @@
 import { RequestHandler } from "express";
-import { maintenanceDto } from "../schemas/maintenance.schema.js";
+import {
+  maintenanceDto,
+  updateMaintenanceDto,
+} from "../schemas/maintenance.schema.js";
 import prisma from "../config/db.js";
 import { AppError, ok } from "../lib/appError.js";
+import { parseAnyDate } from "../utils/date.js";
 
 type searchQuery = {
   status?: "open" | "in_progress" | "completed" | "canceled";
@@ -93,4 +97,34 @@ export const createMaintenance: RequestHandler<
   });
 
   res.status(201).json(ok({ message: "maintenance was created successfully" }));
+};
+
+export const updateMaintenance: RequestHandler<
+  { id: string },
+  unknown,
+  updateMaintenanceDto
+> = async (req, res) => {
+  const { id } = req.params;
+  const { completed_at, cost, description, opened_at, status } = req.body;
+
+  const maintenance = await prisma.maintenance_logs.findUnique({
+    where: { id },
+  });
+
+  if (!maintenance) {
+    throw new AppError("maintenance log was not found", 404);
+  }
+
+  await prisma.maintenance_logs.update({
+    where: { id },
+    data: {
+      completed_at: parseAnyDate(completed_at) || maintenance.completed_at,
+      cost: cost || maintenance.cost,
+      description: description || maintenance.description,
+      opened_at: parseAnyDate(opened_at) || maintenance.opened_at,
+      status: status || maintenance.status,
+    },
+  });
+
+  res.status(201).json(ok({ message: "Updated succesfully" }));
 };
