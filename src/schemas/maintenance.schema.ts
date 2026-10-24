@@ -1,11 +1,11 @@
 import { z } from "zod";
 
-const maintenanceStatus = z.enum([
-  "open",
-  "in_progress",
-  "completed",
-  "canceled",
-]);
+const maintenanceStatus = z.enum(
+  ["open", "in_progress", "completed", "canceled"],
+  {
+    error: `Please enter: open, in_progress, completed or canceled for the status`,
+  },
+);
 
 export const maintenanceSchema = z.object({
   description: z.string("Please add a description"),
