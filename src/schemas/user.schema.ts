@@ -13,4 +13,10 @@ export const userSchema = z.object({
     .default("employee"),
 });
 
+export const loginSchema = z.object({
+  email: z.email("Please enter a valid email format").nonempty(),
+  password: z.string("password is mandatory!").nonempty(),
+});
+
 export type userDto = z.infer<typeof userSchema>;
+export type loginDto = z.infer<typeof loginSchema>;

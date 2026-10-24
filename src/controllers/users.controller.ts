@@ -1,9 +1,10 @@
 import { RequestHandler } from "express";
 import * as argon from "argon2";
 
-import { userDto } from "../schemas/user.schema.js";
+import { loginDto, userDto } from "../schemas/user.schema.js";
 import prisma from "../config/db.js";
 import { AppError, ok } from "../lib/appError.js";
+import { createTokensAndSetCookies } from "../utils/tokens.js";
 
 export const createUser: RequestHandler<unknown, unknown, userDto> = async (
   req,
@@ -30,17 +31,49 @@ export const createUser: RequestHandler<unknown, unknown, userDto> = async (
       id: true,
       name: true,
       email: true,
-    //   password: false,
       role: true,
-    //   office_id: true,
       createdAt: true,
       updatedAt: true,
       office: true,
     },
-    // include: {
-    //   office: true,
-    // },
   });
 
   res.status(201).json(ok(newUser));
+};
+
+export const login: RequestHandler<unknown, unknown, loginDto> = async (
+  req,
+  res,
+) => {
+  const { email, password } = req.body;
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    throw new AppError("User was not found!", 404);
+  }
+
+  const isPwMatch = await argon.verify(user.password, password);
+
+  if (!isPwMatch) {
+    throw new AppError("Icorrect credentials", 404);
+  }
+
+  createTokensAndSetCookies({ userId: user.id }, res);
+
+  res.status(200).json(
+    ok({
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        office_id: user.office_id,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+    }),
+  );
 };
