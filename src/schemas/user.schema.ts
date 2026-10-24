@@ -1,15 +1,16 @@
 import { z } from "zod";
 
 export const userSchema = z.object({
-  name: z.string().nonempty("Name is mandatory!"),
-  email: z.string().nonempty("email is mandatory!"),
-  password: z.string("password is mandatory!"),
-  office_id: z.string("office is mandatory!"),
+  name: z.string("Name is mandatory!").nonempty(""),
+  email: z.email("Please enter a valid email format").nonempty(),
+  password: z.string("password is mandatory!").nonempty(),
+  office_id: z.uuid("office is mandatory!").nonempty(),
   role: z
     .enum(["admin", "employee"], {
       error: "Role must be either (admin) or (employee)",
     })
-    .optional(),
+    .optional()
+    .default("employee"),
 });
 
-export type officeDto = z.infer<typeof userSchema>;
+export type userDto = z.infer<typeof userSchema>;
