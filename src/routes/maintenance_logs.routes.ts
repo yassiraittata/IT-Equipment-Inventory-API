@@ -4,9 +4,11 @@ import {
   getMaintenances,
   getSingleMaintenance,
   updateMaintenance,
+  completeMaintenance,
 } from "../controllers/maintenance_logs.controller.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
 import {
+  completeMaintenanceSchema,
   maintenanceSchema,
   updateMaintenanceSchema,
 } from "../schemas/maintenance.schema.js";
@@ -32,5 +34,12 @@ export default (router: Router) => {
     validateParams(paramsSchema),
     validateRequest(updateMaintenanceSchema),
     updateMaintenance,
+  );
+
+  router.put(
+    "/maintenance_logs/:id/complete",
+    validateParams(paramsSchema),
+    validateRequest(completeMaintenanceSchema),
+    completeMaintenance,
   );
 };

@@ -23,5 +23,11 @@ export const updateMaintenanceSchema = z.object({
   completed_at: z.string().optional(),
 });
 
+export const completeMaintenanceSchema = z.object({
+  cost: z.number().optional(),
+  completed_at: z.string().optional(),
+});
+
 export type maintenanceDto = z.infer<typeof maintenanceSchema>;
 export type updateMaintenanceDto = z.infer<typeof updateMaintenanceSchema>;
+export type completeMaintenanceDto = z.infer<typeof completeMaintenanceSchema>;

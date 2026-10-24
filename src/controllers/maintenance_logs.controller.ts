@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import {
+  completeMaintenanceDto,
   maintenanceDto,
   updateMaintenanceDto,
 } from "../schemas/maintenance.schema.js";
@@ -123,6 +124,41 @@ export const updateMaintenance: RequestHandler<
       description: description || maintenance.description,
       opened_at: parseAnyDate(opened_at) || maintenance.opened_at,
       status: status || maintenance.status,
+    },
+  });
+
+  res.status(201).json(ok({ message: "Updated succesfully" }));
+};
+
+export const completeMaintenance: RequestHandler<
+  { id: string },
+  unknown,
+  completeMaintenanceDto
+> = async (req, res) => {
+  const { id } = req.params;
+  const { completed_at, cost } = req.body;
+
+  const maintenance = await prisma.maintenance_logs.findUnique({
+    where: { id },
+  });
+
+  if (!maintenance) {
+    throw new AppError("maintenance log was not found", 404);
+  }
+
+  await prisma.maintenance_logs.update({
+    where: { id },
+    data: {
+      completed_at: parseAnyDate(completed_at),
+      status: "completed",
+      cost,
+    },
+  });
+
+  await prisma.equipment.update({
+    where: { id: maintenance.equipment_id },
+    data: {
+      status: "in_stock",
     },
   });
 
