@@ -164,3 +164,34 @@ export const completeMaintenance: RequestHandler<
 
   res.status(201).json(ok({ message: "Updated succesfully" }));
 };
+
+export const cancelMaintenance: RequestHandler<{ id: string }> = async (
+  req,
+  res,
+) => {
+  const { id } = req.params;
+
+  const maintenance = await prisma.maintenance_logs.findUnique({
+    where: { id },
+  });
+
+  if (!maintenance) {
+    throw new AppError("maintenance log was not found", 404);
+  }
+
+  await prisma.maintenance_logs.update({
+    where: { id },
+    data: {
+      status: "canceled",
+    },
+  });
+
+  await prisma.equipment.update({
+    where: { id: maintenance.equipment_id },
+    data: {
+      status: "retired",
+    },
+  });
+
+  res.status(201).json(ok({ message: "Updated succesfully" }));
+};
