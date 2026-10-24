@@ -12,16 +12,24 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  admin
+  emplayee
+}
+
 model User {
   id       String @id @default(uuid()) @db.Uuid
   name     String
   email    String @unique
   password String
-  role     String
+  role     Role   @default(emplayee)
+
+  office_id String @db.Uuid
 
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   assignments Assignments[]
+  office      Office        @relation(fields: [office_id], references: [id], onDelete: Restrict)
 }
 
 model Category {
@@ -39,9 +47,11 @@ model Office {
   building String
   floor    Int
 
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   equipment Equipment[]
+  Employees User[]
 }
 
 model Equipment {
@@ -58,7 +68,7 @@ model Equipment {
   updatedAt DateTime @updatedAt
 
   category        Category           @relation(fields: [category_id], references: [id])
-  office          Office             @relation(fields: [office_id], references: [id], onDelete: SetNull)
+  office          Office             @relation(fields: [office_id], references: [id], onDelete: Restrict)
   assignments     Assignments[]
   maintenanceLogs Maintenance_logs[]
 }
