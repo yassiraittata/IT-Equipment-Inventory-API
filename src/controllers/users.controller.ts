@@ -146,3 +146,19 @@ export const updateEmpoloyee: RequestHandler<
 
   res.status(200).json(ok(empoloyee));
 };
+
+export const deleteEmployee: RequestHandler<{ id: string }> = async (
+  req,
+  res,
+) => {
+  try {
+    const { id } = req.params;
+
+    await prisma.user.delete({
+      where: { id },
+    });
+    res.status(200).json(ok({ message: "deleted successfully" }));
+  } catch (e) {
+    throw new AppError("Employee was not found!", 404);
+  }
+};

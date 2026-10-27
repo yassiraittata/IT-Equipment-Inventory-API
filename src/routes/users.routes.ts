@@ -12,6 +12,7 @@ import {
   getEmpoloyees,
   getSingleEmpoloyee,
   updateEmpoloyee,
+  deleteEmployee,
 } from "../controllers/users.controller.js";
 import { validateParams } from "../middlewares/paramsValidator.js";
 import { paramsSchema } from "../schemas/uuid.schema.js";
@@ -31,5 +32,5 @@ export default (router: Router) => {
     validateRequest(updateUserSchema),
     updateEmpoloyee,
   );
-  //   router.delete("/employees/:id");
+  router.delete("/employees/:id", validateParams(paramsSchema), deleteEmployee);
 };
