@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import * as argon from "argon2";
 
-import { loginDto, userDto } from "../schemas/user.schema.js";
+import { loginDto, updateUserDto, userDto } from "../schemas/user.schema.js";
 import prisma from "../config/db.js";
 import { AppError, ok } from "../lib/appError.js";
 import { createTokensAndSetCookies } from "../utils/tokens.js";
@@ -107,6 +107,42 @@ export const getSingleEmpoloyee: RequestHandler<{ id: string }> = async (
   if (!empoloyee) {
     throw new AppError("Empoloyee was not found!", 404);
   }
+
+  res.status(200).json(ok(empoloyee));
+};
+
+export const updateEmpoloyee: RequestHandler<
+  { id: string },
+  unknown,
+  updateUserDto
+> = async (req, res) => {
+  const { id } = req.params;
+
+  const { email, name, office_id, password, role } = req.body;
+
+  const empoloyee = await prisma.user.findUnique({ where: { id } });
+
+  if (!empoloyee) {
+    throw new AppError("Empoloyee was not found!", 404);
+  }
+
+  let hash = empoloyee.password;
+
+  if (password) {
+    const newHash = await argon.hash(password);
+    hash = newHash;
+  }
+
+  await prisma.user.update({
+    where: { id },
+    data: {
+      email: email || empoloyee.email,
+      name: name || empoloyee.name,
+      office_id: office_id || empoloyee.office_id,
+      password: hash,
+      role: role || empoloyee.role,
+    },
+  });
 
   res.status(200).json(ok(empoloyee));
 };

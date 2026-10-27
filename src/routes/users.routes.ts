@@ -1,12 +1,17 @@
 import { Router } from "express";
 
 import { validateRequest } from "../middlewares/validateRequest.js";
-import { userSchema, loginSchema } from "../schemas/user.schema.js";
+import {
+  userSchema,
+  loginSchema,
+  updateUserSchema,
+} from "../schemas/user.schema.js";
 import {
   createUser,
   login,
   getEmpoloyees,
   getSingleEmpoloyee,
+  updateEmpoloyee,
 } from "../controllers/users.controller.js";
 import { validateParams } from "../middlewares/paramsValidator.js";
 import { paramsSchema } from "../schemas/uuid.schema.js";
@@ -20,6 +25,11 @@ export default (router: Router) => {
     validateParams(paramsSchema),
     getSingleEmpoloyee,
   );
-  //   router.put("/employees/:id");
+  router.put(
+    "/employees/:id",
+    validateParams(paramsSchema),
+    validateRequest(updateUserSchema),
+    updateEmpoloyee,
+  );
   //   router.delete("/employees/:id");
 };
