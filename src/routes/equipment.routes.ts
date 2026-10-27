@@ -14,39 +14,54 @@ import { validateParams } from "../middlewares/paramsValidator.js";
 import { paramsSchema } from "../schemas/uuid.schema.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
 import { equipmentSchema } from "../schemas/equipment.schema.js";
+import { isAdmin, isAuth } from "../middlewares/authMiddleware.js";
 
 export default (router: Router) => {
   router.get("/equipments", getAllEquipments);
   router.get(
     "/equipments/:id",
+    isAuth,
     validateParams(paramsSchema),
     getSingleEquipment,
   );
   router.get(
     "/equipments/office/:id",
+    isAuth,
     validateParams(paramsSchema),
     getEquipementByOffice,
   );
   router.get(
     "/equipments/category/:id",
+    isAuth,
     validateParams(paramsSchema),
     getEquipementByCategory,
   );
   router.post(
     "/equipments/add",
+    isAuth,
+    isAdmin,
     validateRequest(equipmentSchema),
     createEquipment,
   );
-  router.post("/equipments/add-many", createEquipments);
-  router.put("/equipments/:id", validateParams(paramsSchema), updateEquipment);
+  router.post("/equipments/add-many", isAuth, isAdmin, createEquipments);
+  router.put(
+    "/equipments/:id",
+    isAuth,
+    isAdmin,
+    validateParams(paramsSchema),
+    updateEquipment,
+  );
   router.delete(
     "/equipments/:id",
+    isAuth,
+    isAdmin,
     validateParams(paramsSchema),
     deleteEquipment,
   );
-  // the hiistory of an item
+  // the history of an item
   router.get(
     "/equipment/:id/assignments",
+    isAuth,
     validateParams(paramsSchema),
     getHistory,
   );

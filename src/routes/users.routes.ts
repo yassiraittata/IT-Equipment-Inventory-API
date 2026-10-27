@@ -16,9 +16,16 @@ import {
 } from "../controllers/users.controller.js";
 import { validateParams } from "../middlewares/paramsValidator.js";
 import { paramsSchema } from "../schemas/uuid.schema.js";
+import { isAdmin, isAuth } from "../middlewares/authMiddleware.js";
 
 export default (router: Router) => {
-  router.post("/users/register", validateRequest(userSchema), createUser);
+  router.post(
+    "/users/register",
+    isAuth,
+    isAdmin,
+    validateRequest(userSchema),
+    createUser,
+  );
   router.post("/users/login", validateRequest(loginSchema), login);
   router.get("/employees", getEmpoloyees);
   router.get(

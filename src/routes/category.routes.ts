@@ -9,12 +9,15 @@ import {
 } from "../controllers/categories.controller.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
 import { categorySchema } from "../schemas/category.schema.js";
+import { isAdmin, isAuth } from "../middlewares/authMiddleware.js";
 
 export default (router: Router) => {
-  router.get("/categories", listCategories);
+  router.get("/categories", isAuth, listCategories);
   router.get("/categories/:id", getCategory);
   router.post(
     "/categories/add",
+    isAuth,
+    isAdmin,
     validateRequest(categorySchema),
     createCatrgory,
   );
@@ -24,5 +27,5 @@ export default (router: Router) => {
     validateRequest(categorySchema),
     updateCatrgory,
   );
-  router.delete("/categories/:id", deleteCatrgory);
+  router.delete("/categories/:id", isAuth, isAdmin, deleteCatrgory);
 };

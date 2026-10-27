@@ -61,7 +61,7 @@ export const login: RequestHandler<unknown, unknown, loginDto> = async (
     throw new AppError("Icorrect credentials", 404);
   }
 
-  createTokensAndSetCookies({ userId: user.id }, res);
+  createTokensAndSetCookies({ userId: user.id, role: user.role }, res);
 
   res.status(200).json(
     ok({

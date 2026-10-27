@@ -15,23 +15,29 @@ import {
 } from "../schemas/maintenance.schema.js";
 import { validateParams } from "../middlewares/paramsValidator.js";
 import { paramsSchema } from "../schemas/uuid.schema.js";
+import { isAdmin, isAuth } from "../middlewares/authMiddleware.js";
 
 export default (router: Router) => {
   router.post(
     "/equipment/:id/maintenance",
+    isAuth,
+    isAdmin,
     validateParams(paramsSchema),
     validateRequest(maintenanceSchema),
     createMaintenance,
   );
-  router.get("/maintenance_logs", getMaintenances);
+  router.get("/maintenance_logs", isAuth, getMaintenances);
   router.get(
     "/maintenance_logs/:id",
+    isAuth,
     validateParams(paramsSchema),
     getSingleMaintenance,
   );
 
   router.put(
     "/maintenance_logs/:id",
+    isAuth,
+    isAdmin,
     validateParams(paramsSchema),
     validateRequest(updateMaintenanceSchema),
     updateMaintenance,
@@ -39,12 +45,16 @@ export default (router: Router) => {
 
   router.put(
     "/maintenance_logs/:id/complete",
+    isAuth,
+    isAdmin,
     validateParams(paramsSchema),
     validateRequest(completeMaintenanceSchema),
     completeMaintenance,
   );
   router.put(
     "/maintenance_logs/:id/cancel",
+    isAuth,
+    isAdmin,
     validateParams(paramsSchema),
     cancelMaintenance,
   );

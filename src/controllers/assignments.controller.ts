@@ -57,8 +57,6 @@ export const createAssignments: RequestHandler<
   res.status(201).json(ok({ message: "The item was assigned successfully!" }));
 };
 
-
-// TODO: make sure to add time
 export const closeAssignments: RequestHandler<{ id: string }> = async (
   req,
   res,

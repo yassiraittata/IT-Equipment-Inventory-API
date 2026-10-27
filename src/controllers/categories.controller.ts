@@ -26,10 +26,7 @@ export const listCategories: RequestHandler<
   res.status(200).json(ok(data));
 };
 
-export const getCategory: RequestHandler<{ id: string }> = async (
-  req,
-  res,
-) => {
+export const getCategory: RequestHandler<{ id: string }> = async (req, res) => {
   const { id } = req.params;
 
   const category = await prisma.category.findFirst({
