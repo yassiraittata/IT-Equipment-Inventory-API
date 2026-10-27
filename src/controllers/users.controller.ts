@@ -77,3 +77,21 @@ export const login: RequestHandler<unknown, unknown, loginDto> = async (
     }),
   );
 };
+
+export const getEmpoloyees: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  { page: string }
+> = async (req, res) => {
+  const page = req.query.page || 1;
+  const take = 10;
+  const skip = (+page - 1) * take;
+
+  const employees = await prisma.office.findMany({
+    take,
+    skip,
+  });
+
+  res.status(200).json(ok(employees));
+};
