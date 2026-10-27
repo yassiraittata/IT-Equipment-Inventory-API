@@ -88,10 +88,25 @@ export const getEmpoloyees: RequestHandler<
   const take = 10;
   const skip = (+page - 1) * take;
 
-  const employees = await prisma.office.findMany({
+  const employees = await prisma.user.findMany({
     take,
     skip,
   });
 
   res.status(200).json(ok(employees));
+};
+
+export const getSingleEmpoloyee: RequestHandler<{ id: string }> = async (
+  req,
+  res,
+) => {
+  const { id } = req.params;
+
+  const empoloyee = await prisma.user.findUnique({ where: { id } });
+
+  if (!empoloyee) {
+    throw new AppError("Empoloyee was not found!", 404);
+  }
+
+  res.status(200).json(ok(empoloyee));
 };
